@@ -1,33 +1,31 @@
 const User = require('../models/UserModel'); // Adjusted to UserModel as per provided code
 const Employee = require('../models/EmployeeModel');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
-// Generating jwt token
-const generateToken = (user) => {
-    return jwt.sign({
-        id: user.id,
-        username: user.username,
-        email: user.email,
-    }, process.env.JWT_SECRET, { expiresIn: '1h' });
-};
+// // Generating jwt token
+// const generateToken = (user) => {
+//     return jwt.sign({
+//         id: user.id,
+//         username: user.username,
+//         email: user.email,
+//     }, process.env.JWT_SECRET, { expiresIn: '1h' });
+// };
 
 const resolvers = {
     Query: {
         //login function
         async login(_, { credentials }) {
             const { username, email, password } = credentials;
-            const userQuery = username ? { username } : { email };
-            const user = await User.findOne(userQuery);
+            const user = username
+                ? await User.findOne({ username })
+                : await User.findOne({ email });
 
-            if (!user || !(await bcrypt.compare(password, user.password))) {
+            if (!user || user.password !== password) {
                 throw new Error('Invalid credentials');
             }
-
-            const token = generateToken(user);
-            return { ...user.toObject(), token };
+            return user.toObject();
         },
+
         //get all employees
         async getAllEmployees() {
             return await Employee.find({});
@@ -38,19 +36,20 @@ const resolvers = {
         },
     },
     Mutation: {
-        //signup function to creat user
+        //signup function
         async signup(_, { input }) {
             const { username, email, password } = input;
-            const hashedPassword = await bcrypt.hash(password, 12);
+
+            // Directly use the provided password
             const newUser = new User({
                 username,
                 email,
-                password: hashedPassword,
+                password,
             });
 
             const result = await newUser.save();
-            const token = generateToken(result);
-            return { ...result.toObject(), token };
+
+            return result.toObject();
         },
 
         //add new employee

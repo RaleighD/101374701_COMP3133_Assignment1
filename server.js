@@ -9,6 +9,7 @@ async function startServer() {
     const apolloServer = new ApolloServer({
         typeDefs,
         resolvers,
+        context: ({ req }) => ({ req }),
     });
 
     await apolloServer.start();
@@ -18,9 +19,11 @@ async function startServer() {
 
     const PORT = process.env.PORT || 4000;
     app.listen(PORT, () => {
-        console.log(`Server ready at http://localhost:${PORT}${apolloServer.graphqlPath}`);
+        console.log(`🪿Server ready at http://localhost:${PORT}${apolloServer.graphqlPath}`);
     });
 }
+
+
 
 startServer().catch(error => {
     console.error('Failed to start the server', error);

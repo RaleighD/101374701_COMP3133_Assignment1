@@ -4,7 +4,7 @@ const employeeSchema = new mongoose.Schema({
     firstName: {
         type: String,
         required: true,
-        trim: true, // Removes any whitespace at the beginning or end
+        trim: true,
     },
     lastName: {
         type: String,
@@ -14,9 +14,10 @@ const employeeSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
-        unique: true, // Ensures that each email is unique in the database
+        unique: true,
         trim: true,
         lowercase: true,
+        //A Little email validation regex attempt
         match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address'],
     },
     gender: {
