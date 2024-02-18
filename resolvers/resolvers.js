@@ -40,7 +40,7 @@ const resolvers = {
         async signup(_, { input }) {
             const { username, email, password } = input;
 
-            // Directly use the provided password
+
             const newUser = new User({
                 username,
                 email,
